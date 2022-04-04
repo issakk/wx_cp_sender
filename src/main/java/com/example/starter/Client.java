@@ -22,6 +22,8 @@ public class Client extends AbstractVerticle {
 
   private static final Long AGENT_ID = 1000002L;
 
+  private String accessToken;
+
 
   @Override
   public void start() throws Exception {
@@ -30,20 +32,22 @@ public class Client extends AbstractVerticle {
     HttpRequest<Buffer> httpRequest = client.postAbs(ACCESS_TOKEN_URL)
       .addQueryParam("corpid", CORP_ID)
       .addQueryParam("corpsecret", CORP_SECRET);
-    cronTrigger.schedule(h -> {
-      request(httpRequest);
-    });
-
+    // cronTrigger.schedule(h -> {
+    //   request(httpRequest);
+    // });
+    requestAccessToken(httpRequest);
 
   }
 
-  private void request(HttpRequest<Buffer> httpRequest) {
+  private void requestAccessToken(HttpRequest<Buffer> httpRequest) {
     httpRequest
       .send(ar -> {
         if (ar.succeeded()) {
           HttpResponse<Buffer> response = ar.result();
           log.info("Got HTTP response with status " + response.statusCode());
           log.info("response.bodyAsString " + response.bodyAsString());
+          accessToken = response.bodyAsJsonObject()
+            .getString("access_token");
         } else {
           ar.cause()
             .printStackTrace();
