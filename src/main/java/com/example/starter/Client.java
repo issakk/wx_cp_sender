@@ -1,7 +1,9 @@
 package com.example.starter;
 
+import com.example.starter.time.CronTrigger;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.ext.web.client.HttpRequest;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +26,19 @@ public class Client extends AbstractVerticle {
   @Override
   public void start() throws Exception {
     WebClient client = WebClient.create(vertx);
-
-
-    client.postAbs(ACCESS_TOKEN_URL)
+    CronTrigger cronTrigger = new CronTrigger(vertx, "0 0/1 * * * ?");
+    HttpRequest<Buffer> httpRequest = client.postAbs(ACCESS_TOKEN_URL)
       .addQueryParam("corpid", CORP_ID)
-      .addQueryParam("corpsecret", CORP_SECRET)
+      .addQueryParam("corpsecret", CORP_SECRET);
+    cronTrigger.schedule(h -> {
+      request(httpRequest);
+    });
+
+
+  }
+
+  private void request(HttpRequest<Buffer> httpRequest) {
+    httpRequest
       .send(ar -> {
         if (ar.succeeded()) {
           HttpResponse<Buffer> response = ar.result();
