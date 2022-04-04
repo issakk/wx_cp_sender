@@ -4,7 +4,9 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Client extends AbstractVerticle {
 
   //https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=ID&corpsecret=SECRET
@@ -30,8 +32,8 @@ public class Client extends AbstractVerticle {
       .send(ar -> {
         if (ar.succeeded()) {
           HttpResponse<Buffer> response = ar.result();
-          System.out.println("Got HTTP response with status " + response.statusCode());
-          System.out.println("response.bodyAsString " + response.bodyAsString());
+          log.info("Got HTTP response with status " + response.statusCode());
+          log.info("response.bodyAsString " + response.bodyAsString());
         } else {
           ar.cause()
             .printStackTrace();
