@@ -19,7 +19,7 @@
     <vertx.version>4.2.6</vertx.version>
     <junit-jupiter.version>5.7.0</junit-jupiter.version>
 
-    <main.verticle>com.example.starter.Server</main.verticle>
+    <main.verticle>com.example.starter.Client</main.verticle>
     <launcher.class>io.vertx.core.Launcher</launcher.class>
   </properties>
 
@@ -151,6 +151,58 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <release>8</release>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>${maven-shade-plugin.version}</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <transformers>
+                  <transformer
+                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                    <manifestEntries>
+                      <Main-Class>${launcher.class}</Main-Class>
+                      <Main-Verticle>${main.verticle}</Main-Verticle>
+                    </manifestEntries>
+                  </transformer>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                </transformers>
+                <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar
+                </outputFile>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${exec-maven-plugin.version}</version>
+          <configuration>
+            <mainClass>io.vertx.core.Launcher</mainClass>
+            <arguments>
+              <argument>run</argument>
+              <argument>${main.verticle}</argument>
+            </arguments>
+          </configuration>
+        </plugin>
+      </plugins>
   </build>
 
 
