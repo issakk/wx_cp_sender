@@ -26,7 +26,9 @@ public class SendReq {
   @Builder.Default
   private Long agentid = 1000002L;
 
-  private TextDTO text;
+  private ContentDTO text;
+
+  private ContentDTO markdown;
 
   private Integer safe;
 
@@ -38,7 +40,7 @@ public class SendReq {
 
   @NoArgsConstructor
   @Data
-  public static class TextDTO {
+  public static class ContentDTO {
     private String content;
   }
 }

@@ -3,7 +3,7 @@ package com.example.starter;
 import com.example.starter.time.CronTrigger;
 import com.example.starter.weather.WeatherDTO;
 import com.example.starter.wx.SendReq;
-import com.example.starter.wx.SendReq.TextDTO;
+import com.example.starter.wx.SendReq.ContentDTO;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
@@ -122,13 +122,13 @@ public class Client extends AbstractVerticle {
   }
 
   private void requestWeather() {
-    String pattern = "{0},最高气温{1},最低气温{2},平均气温{3}";
+    String pattern = "{0},最高气温**{1}**,最低气温**{2}**,平均气温**{3}**";
     if (LocalTime.now()
       .compareTo(LocalTime.of(18, 0)) > 0)
     {
-      pattern = "明天" + pattern;
+      pattern = "<font color=\\\"warning\\\">今天</font> " + pattern;
     } else {
-      pattern = "今天" + pattern;
+      pattern = "<font color=\\\"info\\\">明天</font> " + pattern;
     }
     String finalPattern = pattern;
     client.getAbs(WEATHER_URL)
@@ -168,11 +168,11 @@ public class Client extends AbstractVerticle {
 
             });
 
-          TextDTO text = new TextDTO();
+          ContentDTO text = new ContentDTO();
           text.setContent(sb.toString());
           SendReq seq = SendReq.builder()
-            .msgtype("text")
-            .text(text)
+            .msgtype("markdown")
+            .markdown(text)
             .safe(0)
             .enableIdTrans(0)
             .enableDuplicateCheck(0)
